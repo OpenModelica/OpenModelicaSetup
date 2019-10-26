@@ -50,17 +50,20 @@ git pull
 
 # update OpenModelica
 cd /c/OM114/${OM_ENCRYPT}OM${PLATFORM}
+git checkout master
 git fetch && git fetch --tags
-
-git reset --hard "$OPENMODELICA_BRANCH" && git checkout "$OPENMODELICA_BRANCH" && git pull --recurse-submodules && git fetch && git fetch --tags || exit 1
-git checkout -f "$OPENMODELICA_BRANCH" || exit 1
-git reset --hard "$OPENMODELICA_BRANCH" || exit 1
+git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags || exit 1
+git checkout --force "${OPENMODELICA_BRANCH}" || exit 1
 git submodule update --force --init --recursive || exit 1
+# update libraries to the latest master
+cd libraries
+git checkout master
+git pull
+cd ..
 
 # get the revision
-cd OMCompiler
 export REVISION=`git describe --match "v*.*" --always`
-cd ..
+
 # Directory prefix
 export OMC_INSTALL_PREFIX="/c/OM114/OpenModelica_releases/${OM_ENCRYPT}${REVISION}/"
 # make the file prefix
