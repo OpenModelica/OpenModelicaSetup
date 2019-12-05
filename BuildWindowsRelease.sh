@@ -37,8 +37,8 @@ rm -rf ${TMP}/*
 rm -rf ${TEMP}/*
 
 # set the OPENMODELICAHOME and OPENMODELICALIBRARY
-export OPENMODELICAHOME="c:/dev/${OM_ENCRYPT}OM${PLATFORM}/build"
-export OPENMODELICALIBRARY="c:/dev/${OM_ENCRYPT}OM${PLATFORM}/build/lib/omlibrary"
+export OPENMODELICAHOME="/c/OM114/${OM_ENCRYPT}OM${PLATFORM}/build"
+export OPENMODELICALIBRARY="/c/OM114/${OM_ENCRYPT}OM${PLATFORM}/build/lib/omlibrary"
 
 # have OMDEV in Msys version
 export OMDEV=/c/OM114/OMDev/
@@ -126,11 +126,12 @@ make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstal
 
 # wget the html & pdf versions of OpenModelica users guide
 cd /c/OM114/${OM_ENCRYPT}OM${PLATFORM}/build/share/doc/omc
-wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-latest.tar.xz
+wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-v1.14.0.tar.xz
+mv openmodelica-doc-v1.14.0.tar.xz openmodelica-doc-latest.tar.xz
 tar -xJf openmodelica-doc-latest.tar.xz --strip-components=2
 rm openmodelica-doc-latest.tar.xz
-wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-latest.pdf
-#cp OpenModelicaUsersGuide-latest.pdf OpenModelicaUsersGuide-latest.pdf
+wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-1.14.pdf
+cp OpenModelicaUsersGuide-1.14.pdf OpenModelicaUsersGuide-latest.pdf
 
 # get PySimulator
 # for now get the master from github since OpenModelica plugin is still not part of tagged release. This should be updated once PySimulator outs a new release.
@@ -223,14 +224,15 @@ cd ${OMC_INSTALL_PREFIX}
 # move the last nightly build to the older location
 ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
+mkdir -p public_html/omc/builds/windows/releases/v1.14/maintenance/
+cd public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 #rm -f older/*.* || true
 mv -f OpenModelica* older/ || true
 ENDSSH
-scp OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
+scp OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
+cd public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 pwd
 pwd
 echo "ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe"
