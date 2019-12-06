@@ -212,9 +212,8 @@ echo "Contact us at OpenModelica@ida.liu.se for further issues or questions." >>
 #echo "Running testsuite trace"
 #make -f 'Makefile.omdev.mingw' ${MAKETHREADS} testlogwindows > tmpTime.log 2>&1
 
-echo "Check HUDSON testserver for the testsuite trace here (match revision ${REVISION} to build jobs): " >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
-echo "  https://test.openmodelica.org/hudson/" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
-echo "  https://test.openmodelica.org/hudson/job/OM_Win/lastBuild/console" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
+echo "Check Jenkins testserver for the testsuite trace here (match revision ${REVISION} to build jobs): " >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
+echo "  https://test.openmodelica.org/jenkins/" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
 #cat tmpTime.log >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
 #rm -f tmpTime.log
 
@@ -224,15 +223,15 @@ cd ${OMC_INSTALL_PREFIX}
 # move the last nightly build to the older location
 ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-mkdir -p public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/older
-cd public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
+mkdir -p public_html/omc/builds/windows/releases/1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/older
+cd public_html/omc/builds/windows/releases/1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 #rm -f older/*.* || true
 mv -f OpenModelica* older/ || true
 ENDSSH
-scp OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
+scp OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/releases/1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
+cd public_html/omc/builds/windows/releases/1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 pwd
 pwd
 echo "ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe"
