@@ -224,7 +224,7 @@ cd ${OMC_INSTALL_PREFIX}
 # move the last nightly build to the older location
 ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-mkdir -p public_html/omc/builds/windows/releases/v1.14/maintenance/
+mkdir -p public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/older
 cd public_html/omc/builds/windows/releases/v1.14/maintenance/${OM_ENCRYPT}${PLATFORM}/
 #rm -f older/*.* || true
 mv -f OpenModelica* older/ || true
