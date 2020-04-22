@@ -52,7 +52,7 @@ git pull
 cd /c/OM115/${OM_ENCRYPT}OM${PLATFORM}
 git checkout master
 git fetch && git fetch --tags
-git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags || exit 1
+git reset --hard origin/master && git checkout master && git submodule update --force --init --recursive && git pull --recurse-submodules && git fetch --tags || exit 1
 git checkout --force "${OPENMODELICA_BRANCH}" || exit 1
 git submodule update --force --init --recursive || exit 1
 # update libraries to the latest master
