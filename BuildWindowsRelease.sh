@@ -59,7 +59,7 @@ git submodule update --force --init --recursive || exit 1
 cd libraries
 git checkout master
 git pull
-git cleand -ffdx
+git clean -ffdx
 cd ..
 
 # get the revision
