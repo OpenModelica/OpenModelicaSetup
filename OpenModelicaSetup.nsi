@@ -7,11 +7,11 @@ Unicode true
   !error "Argument PLATFORMVERSION is not set. Call with argument /DPLATFORMVERSION=32 or /DPLATFORMVERSION=64"
 !endif
 
-Name OpenModelica1.16.0-dev.02-${PLATFORMVERSION}bit
+Name OpenModelica1.16.0-dev.03-${PLATFORMVERSION}bit
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\OpenModelica"
-!define VERSION 1.16.0-dev.02-${PLATFORMVERSION}bit
+!define VERSION 1.16.0-dev.03-${PLATFORMVERSION}bit
 !define COMPANY "Open Source Modelica Consortium (OSMC) and Linköping University (LiU)."
 !define URL "http://www.openmodelica.org/"
 BrandingText "Copyright $2 OpenModelica"  ; The $2 variable is filled in the Function .onInit after calling GetLocalTime function.
@@ -296,18 +296,18 @@ Section "ModelicaServices 3.2.3"
   File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaServices 3.2.3"
 SectionEnd
 
-Section "ModelicaReference"
+Section "ModelicaReference 3.2.3"
   SectionIn RO
   # Create lib\omlibrary directory and copy files in it
   SetOutPath "\\?\$INSTDIR\lib\omlibrary"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaReference"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaReference 3.2.3"
 SectionEnd
 
-Section "Modelica_DeviceDrivers 2.0.0"
+Section "Modelica_DeviceDrivers 1.8.2"
   SectionIn RO
   # Create lib\omlibrary directory and copy files in it
   SetOutPath "\\?\$INSTDIR\lib\omlibrary"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Modelica_DeviceDrivers 2.0.0"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Modelica_DeviceDrivers 1.8.2"
 SectionEnd
 
 Section "Modelica_Synchronous 0.93.0"
