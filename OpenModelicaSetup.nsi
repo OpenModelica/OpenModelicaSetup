@@ -7,11 +7,11 @@ Unicode true
   !error "Argument PLATFORMVERSION is not set. Call with argument /DPLATFORMVERSION=32 or /DPLATFORMVERSION=64"
 !endif
 
-Name OpenModelica1.16.0-dev.03-${PLATFORMVERSION}bit
+Name OpenModelica1.16.0-dev.beta1-${PLATFORMVERSION}bit
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\OpenModelica"
-!define VERSION 1.16.0-dev.03-${PLATFORMVERSION}bit
+!define VERSION 1.16.0-dev.beta1-${PLATFORMVERSION}bit
 !define COMPANY "Open Source Modelica Consortium (OSMC) and Linköping University (LiU)."
 !define URL "http://www.openmodelica.org/"
 BrandingText "Copyright $2 OpenModelica"  ; The $2 variable is filled in the Function .onInit after calling GetLocalTime function.
@@ -146,7 +146,9 @@ Section "OpenModelica Core" Section1
   SetOutPath "\\?\$INSTDIR\lib"
   File "..\build\lib\libOMSimulator.a"
   File "..\build\lib\libOMSimulatorLua.a"
-  File "..\build\lib\OMSimulator.py"
+  # Copy the OMSimulator py files
+  SetOutPath "\\?\$INSTDIR\lib\OMSimulator"
+  File /r "..\build\lib\OMSimulator\*"
   # Create tools directory and copy files in it
   SetOutPath "\\?\$INSTDIR\tools"
   # copy the setup file / readme
