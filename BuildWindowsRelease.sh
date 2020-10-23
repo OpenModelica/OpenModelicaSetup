@@ -130,11 +130,11 @@ cd /c/OM116/${OM_ENCRYPT}OM${PLATFORM}
 
 # wget the html & pdf versions of OpenModelica users guide
 cd /c/OM116/${OM_ENCRYPT}OM${PLATFORM}/build/share/doc/omc
-wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-latest.tar.xz
-tar -xJf openmodelica-doc-latest.tar.xz --strip-components=2
-rm openmodelica-doc-latest.tar.xz
-wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-latest.pdf
-#cp OpenModelicaUsersGuide-latest.pdf OpenModelicaUsersGuide-latest.pdf
+wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-v1.16.0.tar.xz
+tar -xJf openmodelica-doc-v1.16.0.tar.xz --strip-components=2
+rm openmodelica-doc-v1.16.0.tar.xz
+wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-1.16.pdf
+cp OpenModelicaUsersGuide-1.16.pdf OpenModelicaUsersGuide-latest.pdf
 
 # get PySimulator
 # for now get the master from github since OpenModelica plugin is still not part of tagged release. This should be updated once PySimulator outs a new release.
