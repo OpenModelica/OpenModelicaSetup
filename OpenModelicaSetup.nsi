@@ -481,6 +481,8 @@ FunctionEnd
 Function LaunchOMEdit
   ; Yes we need to set environment variables before starting OMEdit because nsis can't read the new environment variables set by the installer.
   System::Call 'Kernel32::SetEnvironmentVariable(t, t) i("OPENMODELICAHOME", "$INSTDIR\").r0'
+  ; Try to unset OPENMODELICALIBRARY environment variable
+  System::Call 'Kernel32::SetEnvironmentVariable(t, t) i("OPENMODELICALIBRARY", "").r0'
   ExecShell "" "$INSTDIR\bin\OMEdit.exe"
 FunctionEnd
 
