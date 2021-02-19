@@ -25,7 +25,7 @@ if [ "${OMENCRYPTION}" = "yes" ]; then
 fi
 
 # set the path to our tools
-export PATH=$PATH:/c/Program\ Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis3.04/:/c/bin/git/bin
+export PATH=$PATH:/c/Program\ Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis3.04/:/c/bin/git/bin:/c/bin/git/usr/bin
 
 # don't exit on error
 set +e
@@ -37,32 +37,36 @@ rm -rf ${TMP}/*
 rm -rf ${TEMP}/*
 
 # set the OPENMODELICAHOME and OPENMODELICALIBRARY
-export OPENMODELICAHOME="c:/dev/${OM_ENCRYPT}OM${PLATFORM}/build"
-export OPENMODELICALIBRARY="c:/dev/${OM_ENCRYPT}OM${PLATFORM}/build/lib/omlibrary"
+export OPENMODELICAHOME="/c/OM117/${OM_ENCRYPT}OM${PLATFORM}/build"
+export OPENMODELICALIBRARY="/c/OM117/${OM_ENCRYPT}OM${PLATFORM}/build/lib/omlibrary"
 
 # have OMDEV in Msys version
-export OMDEV=/c/OMDev/
+export OMDEV=/c/OM117/OMDev/
 
 # update OMDev
-cd /c/OMDev/
+cd /c/OM117/OMDev/
+git checkout OM117maintenance
 git pull
 
 # update OpenModelica
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
+git checkout master
 git fetch && git fetch --tags
-
-# attempt to reset to origin
-git checkout "$OPENMODELICA_BRANCH" && git reset --hard "origin/$OPENMODELICA_BRANCH" || true
-git reset --hard "$OPENMODELICA_BRANCH" && git checkout "$OPENMODELICA_BRANCH" && git submodule update --force --init --recursive && git pull --recurse-submodules && git fetch && git fetch --tags || exit 1
-git checkout -f "$OPENMODELICA_BRANCH" || exit 1
-git reset --hard "$OPENMODELICA_BRANCH" || exit 1
+git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags || exit 1
+git checkout --force "${OPENMODELICA_BRANCH}" || exit 1
 git submodule update --force --init --recursive || exit 1
+# update libraries to the latest master
+cd libraries
+git checkout master
+git pull
+git clean -ffdx
+cd ..
 
 # get the revision
 export REVISION=`git describe --match "v*.*" --always`
 
 # Directory prefix
-export OMC_INSTALL_PREFIX="/c/dev/OpenModelica_releases/${OM_ENCRYPT}${REVISION}/"
+export OMC_INSTALL_PREFIX="/c/OM117/OpenModelica_releases/${OM_ENCRYPT}${REVISION}/"
 # make the file prefix
 export OMC_INSTALL_FILE_PREFIX="${OMC_INSTALL_PREFIX}OpenModelica-${REVISION}-${PLATFORM}"
 
@@ -73,7 +77,7 @@ if [ -f "${OMC_INSTALL_FILE_PREFIX}.exe" ]; then
 fi
 
 # clean
-rm -rf /c/dev/OpenModelica_releases/${OM_ENCRYPT}/v*
+rm -rf /c/OM117/OpenModelica_releases/${OM_ENCRYPT}/v*
 rm -rf build
 git submodule foreach --recursive  "git fetch --tags && git reset --hard && git clean -fdxq -e /git -e /svn" || exit 1
 git clean -fdxq -e OMSetup || exit 1
@@ -84,30 +88,30 @@ git submodule status --recursive
 mkdir -p ${OMC_INSTALL_PREFIX}
 
 # update OpenModelicaSetup
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
-git checkout master
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
+git checkout maintenance/v1.17
 git pull
 
 # build OpenModelica
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 echo "Cleaning OpenModelica"
 rm -rf build/
 mkdir -p build/
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} gitclean || make -f 'Makefile.omdev.mingw' ${MAKETHREADS} gitclean || true
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} clean
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 
 echo "Building OpenModelica and OpenModelica libraries"
 # make sure we break on error!
 set -e
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary-core qtclients
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary-all qtclients
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 echo "Installing Python scripting"
 rm -rf OMPython
-git clone https://github.com/OpenModelica/OMPython -q -b master /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMPython
+git clone https://github.com/OpenModelica/OMPython -q -b master /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/OMPython
 # build OMPython
 make -k -f 'Makefile.omdev.mingw' ${MAKETHREADS} install-python
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 echo "Building MSVC compiled runtime"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2013 simulationruntimecmsvc
 echo "Building MSVC CPP runtime"
@@ -118,26 +122,26 @@ echo "Copying OMSens"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} omsens
 
 echo "OMJava scripting"
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 rm -rf OMJava
 git clone https://github.com/OpenModelica/OMJava.git
 cd OMJava && make dep && make install
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 
 # wget the html & pdf versions of OpenModelica users guide
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share/doc/omc
-wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-latest.tar.xz
-tar -xJf openmodelica-doc-latest.tar.xz --strip-components=2
-rm openmodelica-doc-latest.tar.xz
-wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-latest.pdf
-#cp OpenModelicaUsersGuide-latest.pdf OpenModelicaUsersGuide-latest.pdf
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/build/share/doc/omc
+wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-v1.17.0.tar.xz
+tar -xJf openmodelica-doc-v1.17.0.tar.xz --strip-components=2
+rm openmodelica-doc-v1.17.0.tar.xz
+wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-1.17.pdf
+cp OpenModelicaUsersGuide-1.17.pdf OpenModelicaUsersGuide-latest.pdf
 
 # get PySimulator
 # for now get the master from github since OpenModelica plugin is still not part of tagged release. This should be updated once PySimulator outs a new release.
-git clone https://github.com/PySimulator/PySimulator -q -b master /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share/omc/scripts/PythonInterface/PySimulator
+git clone https://github.com/PySimulator/PySimulator -q -b master /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/build/share/omc/scripts/PythonInterface/PySimulator
 
 # get Figaro
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/build/share
 # do not get it from sourceforge as it fails sometimes!
 #wget --no-check-certificate -O jEdit4.5_VisualFigaro.zip https://sourceforge.net/p/visualfigaro/code/HEAD/tree/Trunk/Package/4_Packages_livrables/jEdit4.5_VisualFigaro.zip?format=raw
 wget --no-check-certificate -O jEdit4.5_VisualFigaro.zip https://build.openmodelica.org/omc/figaro/v1.12/jEdit4.5_VisualFigaro.zip
@@ -145,25 +149,25 @@ unzip jEdit4.5_VisualFigaro.zip
 rm jEdit4.5_VisualFigaro.zip
 
 # OMSimulator and OMTLMSimulator
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/
 make -f Makefile.omdev.mingw omsimulator
 cd OMSimulator
 make OMTLMSimulatorStandalone
 
 # build the installer
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
 makensis //DPLATFORMVERSION="${PLATFORM::-3}" OpenModelicaSetup.nsi > trace.txt 2>&1 || cat trace.txt
 # move the installer
 mv OpenModelica.exe ${OMC_INSTALL_FILE_PREFIX}.exe
 
 # gather the svn log
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 git log --name-status --graph --submodule > ${OMC_INSTALL_FILE_PREFIX}-ChangeLog.txt
 
 # make the readme
 export DATESTR=`date +"%Y-%m-%d_%H-%M"`
-echo "Automatic build of OpenModelica by testwin.openmodelica.org at date: ${DATESTR} from revision: ${REVISION}" >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
+echo "Automatic build of OpenModelica by *.openmodelica.org at date: ${DATESTR} from revision: ${REVISION}" >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
 echo " " >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
 echo "Read OpenModelica-${REVISION}-ChangeLog.txt for more info on changes." >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
 echo " " >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
@@ -206,13 +210,12 @@ echo "Read more about OpenModelica at https://openmodelica.org" >> ${OMC_INSTALL
 echo "Contact us at OpenModelica@ida.liu.se for further issues or questions." >> ${OMC_INSTALL_FILE_PREFIX}-README.txt
 
 # make the testsuite-trace
-#cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+#cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}
 #echo "Running testsuite trace"
 #make -f 'Makefile.omdev.mingw' ${MAKETHREADS} testlogwindows > tmpTime.log 2>&1
 
-echo "Check HUDSON testserver for the testsuite trace here (match revision ${REVISION} to build jobs): " >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
-echo "  https://test.openmodelica.org/hudson/" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
-echo "  https://test.openmodelica.org/hudson/job/OM_Win/lastBuild/console" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
+echo "Check Jenkins testserver for the testsuite trace here (match revision ${REVISION} to build jobs): " >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
+echo "  https://test.openmodelica.org/jenkins/" >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
 #cat tmpTime.log >> ${OMC_INSTALL_FILE_PREFIX}-testsuite-trace.txt
 #rm -f tmpTime.log
 
@@ -220,17 +223,17 @@ ls -lah ${OMC_INSTALL_PREFIX}
 
 cd ${OMC_INSTALL_PREFIX}
 # move the last nightly build to the older location
-ssh -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts ${SSHUSER}@build.openmodelica.org <<ENDSSH
+ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
+mkdir -p public_html/omc/builds/windows/releases/1.17/maintenance/${OM_ENCRYPT}${PLATFORM}/older
+cd public_html/omc/builds/windows/releases/1.17/maintenance/${OM_ENCRYPT}${PLATFORM}/
 #rm -f older/*.* || true
 mv -f OpenModelica* older/ || true
 ENDSSH
-scp  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
-ssh  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts ${SSHUSER}@build.openmodelica.org <<ENDSSH
+scp OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/releases/1.17/maintenance/${OM_ENCRYPT}${PLATFORM}/
+ssh ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${OM_ENCRYPT}${PLATFORM}/
-pwd
+cd public_html/omc/builds/windows/releases/1.17/maintenance/${OM_ENCRYPT}${PLATFORM}/
 pwd
 echo "ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe"
 ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe
