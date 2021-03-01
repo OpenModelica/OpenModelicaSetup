@@ -242,6 +242,34 @@ Section "ModelicaServices 3.2.3"
   File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaServices 3.2.3"
 SectionEnd
 
+Section "Complex 4.0.0.mo"
+  SectionIn RO
+  # Create lib\omlibrary directory and copy files in it
+  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Complex 4.0.0.mo"
+SectionEnd
+
+Section "Modelica 4.0.0"
+  SectionIn RO
+  # Create lib\omlibrary directory and copy files in it
+  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Modelica 4.0.0"
+SectionEnd
+
+Section "ModelicaTest 4.0.0"
+  SectionIn RO
+  # Create lib\omlibrary directory and copy files in it
+  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaTest 4.0.0"
+SectionEnd
+
+Section "ModelicaServices 4.0.0"
+  SectionIn RO
+  # Create lib\omlibrary directory and copy files in it
+  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
+  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaServices 4.0.0"
+SectionEnd
+
 Section "ModelicaReference"
   SectionIn RO
   # Create lib\omlibrary directory and copy files in it
