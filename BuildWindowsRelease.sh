@@ -157,7 +157,7 @@ make OMTLMSimulatorStandalone
 # build the installer
 cd /c/OM117/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
-makensis //DPLATFORMVERSION="${PLATFORM::-3}" OpenModelicaSetup.nsi > trace.txt 2>&1 || cat trace.txt
+makensis //DPLATFORMVERSION="${PLATFORM::-3}" OpenModelicaSetup.nsi > trace.txt 2>&1 || cat trace.txt && exit 1
 # move the installer
 mv OpenModelica.exe ${OMC_INSTALL_FILE_PREFIX}.exe
 
