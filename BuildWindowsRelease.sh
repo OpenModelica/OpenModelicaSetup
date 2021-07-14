@@ -122,9 +122,9 @@ git clone https://github.com/OpenModelica/OMPython -q -b master /c/OM118/${OM_EN
 make -k -f 'Makefile.omdev.mingw' ${MAKETHREADS} install-python
 cd /c/OM118/${OM_ENCRYPT}OM${PLATFORM}
 echo "Building MSVC compiled runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2013 simulationruntimecmsvc
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2015 simulationruntimecmsvc
 echo "Building MSVC CPP runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2013 runtimeCPPmsvcinstall
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2015 runtimeCPPmsvcinstall
 echo "Building CPP runtime"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
 echo "Copying OMSens"
