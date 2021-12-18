@@ -149,13 +149,13 @@ cp OpenModelicaUsersGuide-1.18.pdf OpenModelicaUsersGuide-latest.pdf
 # for now get the master from github since OpenModelica plugin is still not part of tagged release. This should be updated once PySimulator outs a new release.
 git clone https://github.com/PySimulator/PySimulator -q -b master /c/OM118/${OM_ENCRYPT}OM${PLATFORM}/build/share/omc/scripts/PythonInterface/PySimulator
 
-# get Figaro
-cd /c/OM118/${OM_ENCRYPT}OM${PLATFORM}/build/share
+# get Figaro - let's not distribute this one until log4j vulnerability is solved
+#cd /c/OM118/${OM_ENCRYPT}OM${PLATFORM}/build/share
 # do not get it from sourceforge as it fails sometimes!
 #wget --no-check-certificate -O jEdit4.5_VisualFigaro.zip https://sourceforge.net/p/visualfigaro/code/HEAD/tree/Trunk/Package/4_Packages_livrables/jEdit4.5_VisualFigaro.zip?format=raw
-wget --no-check-certificate -O jEdit4.5_VisualFigaro.zip https://build.openmodelica.org/omc/figaro/v1.12/jEdit4.5_VisualFigaro.zip
-unzip jEdit4.5_VisualFigaro.zip
-rm jEdit4.5_VisualFigaro.zip
+#wget --no-check-certificate -O jEdit4.5_VisualFigaro.zip https://build.openmodelica.org/omc/figaro/v1.12/jEdit4.5_VisualFigaro.zip
+#unzip jEdit4.5_VisualFigaro.zip
+#rm jEdit4.5_VisualFigaro.zip
 
 # OMSimulator and OMTLMSimulator
 cd /c/OM118/${OM_ENCRYPT}OM${PLATFORM}/
