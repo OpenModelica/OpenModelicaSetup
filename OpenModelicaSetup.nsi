@@ -279,18 +279,6 @@ Section "ModelicaReference"
   File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\ModelicaReference"
 SectionEnd
 
-Section "Modelica_DeviceDrivers 1.8.2"
-  # Create lib\omlibrary directory and copy files in it
-  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Modelica_DeviceDrivers 1.8.2"
-SectionEnd
-
-Section "Modelica_Synchronous 0.93.0"
-  # Create lib\omlibrary directory and copy files in it
-  SetOutPath "\\?\$INSTDIR\lib\omlibrary"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\omlibrary\Modelica_Synchronous 0.93.0"
-SectionEnd
-
 SectionGroupEnd
 
 LangString DESC_SectionGroup1 ${LANG_ENGLISH} "Installs the Modelica Standard Library."
