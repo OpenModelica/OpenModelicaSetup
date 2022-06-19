@@ -183,7 +183,7 @@ if ! makensis //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_SHOR
 fi
 
 # sign the installer but do not fail!
-"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //t "http://time.certum.pl/" //fd sha256 //v OpenModelica.exe || true
+"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //td SHA256 //v OpenModelica.exe || true
 
 # move the installer
 mv OpenModelica.exe ${OMC_INSTALL_FILE_PREFIX}.exe
@@ -266,9 +266,10 @@ pwd
 echo "ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe"
 ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe
 ls -lah
-echo "md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.md5sum"
-md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.md5sum
-cat OpenModelica-latest.md5sum
+echo "md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.exe.md5sum"
+md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.exe.md5sum
+cp OpenModelica-latest.exe.md5sum OpenModelica-${REVISION}-${PLATFORM}.exe.md5sum
+cat OpenModelica-latest.exe.md5sum
 ls -lah
 ENDSSH
 echo "All done!"
