@@ -170,6 +170,11 @@ make -f Makefile.omdev.mingw omsimulator
 cd OMSimulator
 make OMTLMSimulatorStandalone
 
+# generate package index for Modelica Standard Library
+cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMCompiler/Compiler/scripts/installMSL
+python generateIndex.py
+/c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/bin/omc.exe index.mos
+
 # build the installer
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
