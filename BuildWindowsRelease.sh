@@ -64,20 +64,10 @@ git pull
 
 # update OpenModelica
 cd /c/OM121/${OM_ENCRYPT}OM${PLATFORM}
-# if we build an experimental PR number skip this!
-if [[ "$OPENMODELICA_BRANCH" =~ PR_.*_experimental ]]; then
-  echo "Building experimental PR build: $OPENMODELICA_BRANCH!"
-  export PR_NAME=_${OPENMODELICA_BRANCH}
-  export PR_BUILD="PRbuilds/"
-else
-  echo "Building $OPENMODELICA_BRANCH!"
-  git fetch && git fetch --tags
-  # attempt to reset to origin
-  git checkout "$OPENMODELICA_BRANCH" && git reset --hard "origin/$OPENMODELICA_BRANCH" || true
-  git reset --hard "$OPENMODELICA_BRANCH" && git checkout "$OPENMODELICA_BRANCH" && git submodule update --force --init --recursive && git pull --recurse-submodules && git fetch && git fetch --tags || exit 1
-fi
-git checkout -f "$OPENMODELICA_BRANCH" || exit 1
-git reset --hard "$OPENMODELICA_BRANCH" || exit 1
+git checkout master
+git fetch && git fetch --tags
+git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags || exit 1
+git checkout --force "${OPENMODELICA_BRANCH}" || exit 1
 git submodule update --force --init --recursive || exit 1
 
 # get the revision
