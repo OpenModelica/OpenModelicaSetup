@@ -85,8 +85,10 @@ PRODUCT_VERSION=${PRODUCT_VERSION}.0
 
 # Directory prefix
 export OMC_INSTALL_PREFIX="/c/OM121/OpenModelica_releases/${OM_ENCRYPT}${REVISION}/"
+# file suffix
+export OMC_FILE_PREFIX="OpenModelica-${REVISION}-${PLATFORM}${OM_ENCRYPT_SUFFIX}"
 # make the file prefix
-export OMC_INSTALL_FILE_PREFIX="${OMC_INSTALL_PREFIX}OpenModelica-${REVISION}-${PLATFORM}${OM_ENCRYPT_SUFFIX}"
+export OMC_INSTALL_FILE_PREFIX="${OMC_INSTALL_PREFIX}${OMC_FILE_PREFIX}"
 
 # test if exists and exit if it does
 if [ -f "${OMC_INSTALL_FILE_PREFIX}.exe" ]; then
@@ -261,12 +263,12 @@ ssh  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts ${SSHUSER
 #commands to run on remote host
 cd public_html/omc/builds/windows/releases/1.21/maintenance/${OM_ENCRYPT}${PLATFORM}/
 pwd
-echo "ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe"
-ln -s OpenModelica-${REVISION}-${PLATFORM}.exe OpenModelica-latest.exe
+echo "ln -s ${OMC_FILE_PREFIX}.exe OpenModelica-latest.exe"
+ln -s ${OMC_FILE_PREFIX}.exe OpenModelica-latest.exe
 ls -lah
 echo "md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.exe.md5sum"
 md5sum OpenModelica-latest.exe | cut -f 1 -d ' ' > OpenModelica-latest.exe.md5sum
-cp OpenModelica-latest.exe.md5sum OpenModelica-${REVISION}-${PLATFORM}.exe.md5sum
+cp OpenModelica-latest.exe.md5sum ${OMC_FILE_PREFIX}.exe.md5sum
 cat OpenModelica-latest.exe.md5sum
 ls -lah
 ENDSSH
