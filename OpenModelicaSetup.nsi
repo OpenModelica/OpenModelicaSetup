@@ -15,6 +15,18 @@ Unicode true
   !error "Argument PRODUCTVERSION is not set. Call with argument /DPRODUCTVERSION=OpenModelica version"
 !endif
 
+!ifndef OPENMODELICASOURCEDIR
+  !error "Argument OPENMODELICASOURCEDIR is not set. Call with argument /DOPENMODELICASOURCEDIR=c:\path\to\OpenModelica"
+!endif
+
+!ifndef OPENMODELICAHOME
+  !error "Argument OPENMODELICAHOME is not set. Call with argument /DOPENMODELICAHOME=c:\path\to\OpenModelica\build_cmake\install_cmake"
+!endif
+
+!ifndef MSYSTEM
+  !error "Argument MSYSTEM is not set. Call with argument /DMSYSTEM=UCRT64"
+!endif
+
 Name OpenModelica${OMVERSION}-${PLATFORMVERSION}bit
 
 # General Symbol Definitions
@@ -114,10 +126,10 @@ Section "OpenModelica Core" Section1
   SetOverwrite on
   # Create bin directory and copy files in it
   SetOutPath "\\?\$INSTDIR\bin"
-  File "..\build\bin\*"
-  File "..\OSMC-License.txt"
+  File "${OPENMODELICAHOME}\bin\*"
+  File "${OPENMODELICASOURCEDIR}\OSMC-License.txt"
   # Copy the openssl binaries
-!if ${PLATFORMVERSION} == "32"
+!if PLATFORMVERSION == "32"
   File "bin\32bit\libeay32.dll"
   File "bin\32bit\libssl32.dll"
   File "bin\32bit\ssleay32.dll"
@@ -127,43 +139,47 @@ Section "OpenModelica Core" Section1
   File "bin\64bit\ssleay32.dll"
 !endif
   # Copy the qt plugins
-  File /r /x "*.svn" "$%OMDEV%\tools\msys\mingw${PLATFORMVERSION}\share\qt5\plugins\*"
+  File /r /x "*.svn" "$%OMDEV%\tools\msys\${MSYSTEM}\share\qt5\plugins\*"
   # Create the bin\osgPlugins-3.6.5 directory
   SetOutPath "\\?\$INSTDIR\bin\osgPlugins-3.6.5"
-  File /r /x "*.svn" "$%OMDEV%\tools\msys\mingw${PLATFORMVERSION}\bin\osgPlugins-3.6.5\*"
+  File /r /x "*.svn" "$%OMDEV%\tools\msys\${MSYSTEM}\bin\osgPlugins-3.6.5\*"
   # Create bin\ffi directory and copy files in it
   SetOutPath "\\?\$INSTDIR\bin\ffi"
-  File "..\build\bin\ffi\*"
-!if /FILEEXISTS "..\build\bin\omc-semla\*.*"
+  File "${OPENMODELICAHOME}\bin\ffi\*"
+!if /FILEEXISTS "${OPENMODELICAHOME}\bin\omc-semla\*.*"
   # Create bin\omc-semla directory and copy files in it
   SetOutPath "\\?\$INSTDIR\bin\omc-semla"
-  File /r "..\build\bin\omc-semla\*"
+  File /r "${OPENMODELICAHOME}\bin\omc-semla\*"
 !endif
   # Create icons directory and copy files in it
   SetOutPath "\\?\$INSTDIR\icons"
   File /r /x "*.svn" "icons\*"
-  File "..\OMEdit\OMEditLIB\Resources\icons\omedit.ico"
-  File "..\OMOptim\OMOptim\GUI\Resources\omoptim.ico"
-  File "..\OMPlot\OMPlot\OMPlotGUI\Resources\icons\omplot.ico"
-  File "..\OMShell\OMShell\OMShellGUI\Resources\omshell.ico"
-  File "..\OMNotebook\OMNotebook\OMNotebookGUI\Resources\OMNotebook_icon.ico"
+  File "${OPENMODELICASOURCEDIR}\OMEdit\OMEditLIB\Resources\icons\omedit.ico"
+  File "${OPENMODELICASOURCEDIR}\OMOptim\OMOptim\GUI\Resources\omoptim.ico"
+  File "${OPENMODELICASOURCEDIR}\OMPlot\OMPlot\OMPlotGUI\Resources\icons\omplot.ico"
+  File "${OPENMODELICASOURCEDIR}\OMShell\OMShell\OMShellGUI\Resources\omshell.ico"
+  File "${OPENMODELICASOURCEDIR}\OMNotebook\OMNotebook\OMNotebookGUI\Resources\OMNotebook_icon.ico"
   # Create include\omc directory and copy files in it
   SetOutPath "\\?\$INSTDIR\include\omc"
-  File /r /x "*.svn" "..\build\include\omc\*"
+  File /r /x "*.svn" "${OPENMODELICAHOME}\include\omc\*"
   # Create lib\omc directory and copy files in it
   SetOutPath "\\?\$INSTDIR\lib\omc"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\omc\*"
+  File /r /x "*.svn" /x "*.git" "${OPENMODELICAHOME}\lib\omc\*"
+!if /FILEEXISTS "${OPENMODELICAHOME}\lib\python\*"
   # Create lib\python directory and copy files in it
   SetOutPath "\\?\$INSTDIR\lib\python"
-  File /r /x "*.svn" /x "*.git" "..\build\lib\python\*"
+  File /r /x "*.svn" /x "*.git" "${OPENMODELICAHOME}\lib\python\*"
+!endif
   # Create tools directory and copy files in it
   SetOutPath "\\?\$INSTDIR\tools"
   # copy the setup file / readme
+!if /FILEEXISTS "$%OMDEV%\tools\MSYS_SETUP.bat"
   File "$%OMDEV%\tools\MSYS_SETUP*"
+!endif
   # Create msys directory and copy files in it
   SetOutPath "\\?\$INSTDIR\tools\msys"
-!if ${PLATFORMVERSION} == "32"
-  File /r /x "mingw64" /x "group" /x "passwd" /x "pacman.log" /x "tmp\*.*" /x "*.pyc" /x "libQt5*.*" \
+!if PLATFORMVERSION == "32"
+  File /r /x "${MSYSTEM::-2}64" /x "group" /x "passwd" /x "pacman.log" /x "tmp" /x "*.pyc" /x "libQt5*.*" \
       /x "moc.exe" /x "qt*.qch" /x "Qt5*.dll" /x "libwx*.*" /x "libgtk*.*" /x "qtcreator" /x "rcc.exe" \
       /x "testcon.exe" /x "libsicu*.*" /x "libicu*.*" /x "wx*.dll" /x "libosg*.*" /x "Adwaita" /x "OpenSceneGraph" /x "gtk-doc" \
       /x "poppler" /x "man" /x "libdbus.*" /x "tcl*.*" /x "avcodec*.*" /x "windeployqt.exe" /x "python3.5" /x "mingw_osg*.*" \
@@ -181,7 +197,7 @@ Section "OpenModelica Core" Section1
       /x "osgVolume" /x "osgWidget" /x "clang-cl.exe" /x "clang-check.exe" /x "llvm-lto2.exe" /x "doc" \
       "$%OMDEV%\tools\msys\*"
 !else
-  File /r /x "mingw32" /x "group" /x "passwd" /x "pacman.log" /x "tmp\*.*" /x "*.pyc" /x "libQt5*.*" \
+  File /r /x "${MSYSTEM::-2}32" /x "group" /x "passwd" /x "pacman.log" /x "tmp" /x "*.pyc" /x "libQt5*.*" \
       /x "moc.exe" /x "qt*.qch" /x "Qt5*.dll" /x "libwx*.*" /x "libgtk*.*" /x "qtcreator" /x "rcc.exe" \
       /x "testcon.exe" /x "libsicu*.*" /x "libicu*.*" /x "wx*.dll" /x "libosg*.*" /x "Adwaita" /x "OpenSceneGraph" /x "gtk-doc" \
       /x "poppler" /x "man" /x "libdbus.*" /x "tcl*.*" /x "avcodec*.*" /x "windeployqt.exe" /x "python3.5" /x "mingw_osg*.*" \
@@ -201,14 +217,14 @@ Section "OpenModelica Core" Section1
 !endif
   # Create share directory and copy files in it
   SetOutPath "\\?\$INSTDIR\share"
-  File /r /x "*.svn" /x "*.git" "..\build\share\*"
+  File /r /x "*.svn" /x "*.git" "${OPENMODELICAHOME}\share\*"
   # Copy the OpenModelica web page & users guide url shortcut
   SetOutPath "\\?\$INSTDIR\share\doc\omc"
-  File "..\doc\OpenModelica Project Online.url"
-  File "..\doc\OpenModelicaUsersGuide.url"
+  File "${OPENMODELICASOURCEDIR}\doc\OpenModelica Project Online.url"
+  File "${OPENMODELICASOURCEDIR}\doc\OpenModelicaUsersGuide.url"
   # Copy OMSens directory
   SetOutPath "\\?\$INSTDIR\share\OMSens"
-  File /r /x ".git*" "..\build\share\OMSens\*"
+  File /r /x ".git*" "${OPENMODELICAHOME}\share\OMSens\*"
 SectionEnd
 
 Section -Main SEC0000
@@ -254,12 +270,12 @@ Section -post SEC0001
   Exec '"$INSTDIR\tools\msys\usr\bin\mkgroup.exe" -l -c > $INSTDIR\tools\msys\etc\group'
   # Rename libeay32.dll and ssleay32.dll as they seem to have issues on some newer Windows versions
   # https://trac.openmodelica.org/OpenModelica/ticket/5909 https://www.openmodelica.org/forum/default-topic/2944-installation-problems
-!if ${PLATFORMVERSION} == "32"
-  Rename "$INSTDIR\tools\msys\mingw32\bin\libeay32.dll" "$INSTDIR\tools\msys\mingw32\bin\libeay32-O.dll"
-  Rename "$INSTDIR\tools\msys\mingw32\bin\ssleay32.dll" "$INSTDIR\tools\msys\mingw32\bin\ssleay32-O.dll"
+!if PLATFORMVERSION == "32"
+  Rename "$INSTDIR\tools\msys\${MSYSTEM}\bin\libeay32.dll" "$INSTDIR\tools\msys\${MSYSTEM}\bin\libeay32-O.dll"
+  Rename "$INSTDIR\tools\msys\${MSYSTEM}\bin\ssleay32.dll" "$INSTDIR\tools\msys\${MSYSTEM}\bin\ssleay32-O.dll"
 !else
-  Rename "$INSTDIR\tools\msys\mingw64\bin\libeay32.dll" "$INSTDIR\tools\msys\mingw64\bin\libeay32-O.dll"
-  Rename "$INSTDIR\tools\msys\mingw64\bin\ssleay32.dll" "$INSTDIR\tools\msys\mingw64\bin\ssleay32-O.dll"
+  Rename "$INSTDIR\tools\msys\${MSYSTEM}\bin\libeay32.dll" "$INSTDIR\tools\msys\${MSYSTEM}\bin\libeay32-O.dll"
+  Rename "$INSTDIR\tools\msys\${MSYSTEM}\bin\ssleay32.dll" "$INSTDIR\tools\msys\${MSYSTEM}\bin\ssleay32-O.dll"
 !endif
   # do post installation actions
   WriteRegStr SHCTX "${REGKEY}" Path $INSTDIR
