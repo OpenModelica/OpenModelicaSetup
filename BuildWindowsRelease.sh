@@ -37,6 +37,18 @@ if [ "${PLATFORM}" = "32bit" ]; then
 	XPREFIX="x86"
 fi
 
+MSYSRUNTIME=""
+if [ "${MSYSTEM}" = "UCRT64" ]; then
+	MSYSRUNTIME="ucrt"
+fi
+if [ "${MSYSTEM}" = "MINGW64" ]; then
+	MSYSRUNTIME="mingw"
+fi
+if [ "${MSYSTEM}" = "MINGW32" ]; then
+	MSYSRUNTIME="mingw"
+fi
+
+
 SIGNTOOL=`find /c/Program\ Files\ \(x86\)/Windows\ Kits/10/ -wholename "*${XPREFIX}/signtool.exe" | tail -1`
 if [ "${SIGNTOOL}" = "" ]; then
  echo "Could not find signtool.exe"
@@ -46,11 +58,27 @@ fi
 # don't exit on error
 set +e
 # make sure we use the windows temp directory and not the msys/tmp one!
-rm -rf ${TMP}/*
-rm -rf ${TEMP}/*
-export TMP=$tmp TEMP=$temp
-rm -rf ${TMP}/*
-rm -rf ${TEMP}/*
+
+# !!!!! make sure we don't do rm -f /* 
+if [ ! -z "${TMP}" ]; then
+ rm -rf ${TMP}/*
+fi
+if [ ! -z "${TEMP}" ]; then
+ rm -rf ${TEMP}/*
+fi
+# of course msys2 changed the way one accesses the windows %TMP% and %TEMP% in sh
+if [ ! -z "${ORIGINAL_TMP}" ]; then
+export TMP=$ORIGINAL_TMP
+fi
+if [ ! -z "${ORIGINAL_TEMP}" ]; then
+export TEMP=$ORIGINAL_TEMP
+fi
+if [ ! -z "${TMP}" ]; then
+ rm -rf ${TMP}/*
+fi
+if [ ! -z "${TEMP}" ]; then
+ rm -rf ${TEMP}/*
+fi
 
 # set the OPENMODELICAHOME and OPENMODELICALIBRARY
 export OPENMODELICAHOME="c:/dev/${OM_ENCRYPT}OM${PLATFORM}/build"
@@ -135,21 +163,16 @@ echo "Building OpenModelica and OpenModelica libraries"
 # make sure we break on error!
 set -e
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary qtclients
+echo "Building CPP runtime"
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
+echo "Copying OMSens"
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} omsens
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
 echo "Installing Python scripting"
 rm -rf OMPython
 git clone https://github.com/OpenModelica/OMPython -q -b master /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMPython
 # build OMPython
 make -k -f 'Makefile.omdev.mingw' ${MAKETHREADS} install-python
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
-echo "Building MSVC compiled runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2015 simulationruntimecmsvc
-echo "Building MSVC CPP runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release VSVERSION=2015 runtimeCPPmsvcinstall
-echo "Building CPP runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
-echo "Copying OMSens"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} omsens
 
 echo "OMJava scripting"
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
@@ -185,7 +208,7 @@ make -f Makefile.omdev.mingw omsimulator
 # build the installer
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
-if ! makensis //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_SHORT}" //DPRODUCTVERSION=${PRODUCT_VERSION} //DOPENMODELICASOURCEDIR=/c/dev/${OM_ENCRYPT}OM${PLATFORM} //DOPENMODELICAHOME="${OPENMODELICAHOME}" //DMSYSTEM="${MSYSTEM}" OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
+if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_SHORT}" //DPRODUCTVERSION=${PRODUCT_VERSION} //DOPENMODELICASOURCEDIR=/c/dev/${OM_ENCRYPT}OM${PLATFORM} //DOPENMODELICAHOME="${OPENMODELICAHOME}" OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
   cat trace.txt
   exit 1
 fi
@@ -261,14 +284,14 @@ cd ${OMC_INSTALL_PREFIX}
 # move the last nightly build to the older location
 ssh -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
+cd /var/www/build.openmodelica.org/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
 #rm -f older/*.* || true
 mv -f OpenModelica* older/ || true
 ENDSSH
-scp  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:public_html/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
+scp  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts OpenModelica*${PLATFORM}* ${SSHUSER}@build.openmodelica.org:/var/www/build.openmodelica.org/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
 ssh  -i $HOME/.ssh/id_rsa -o UserKnownHostsFile=$HOME/.ssh/known_hosts ${SSHUSER}@build.openmodelica.org <<ENDSSH
 #commands to run on remote host
-cd public_html/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
+cd /var/www/build.openmodelica.org/omc/builds/windows/nightly-builds/${PR_BUILD}${OM_ENCRYPT}${PLATFORM}/
 pwd
 echo "ln -s ${OMC_FILE_PREFIX}.exe OpenModelica-latest.exe"
 ln -s ${OMC_FILE_PREFIX}.exe OpenModelica-latest.exe

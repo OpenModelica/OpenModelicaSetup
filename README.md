@@ -57,6 +57,7 @@ Start `%OMDEV%\tools\msys\ucrt64.exe` or `%OMDEV%\tools\msys\mingw64.exe` and ru
 
 ```bash
 export PLATFORM="64"        # 64 or 32 bit
+export MSYSRUNTIME="ucrt"   # ucrt or mingw
 export OPENMODELICA_SOURCE_DIR="d:\\path\\to\\OpenModelica"
 export REVISION_SHORT=`cd $OPENMODELICA_SOURCE_DIR; git describe --match "v*.*" --always --abbrev=0`
 export PRODUCT_VERSION="${REVISION_SHORT:1}"
@@ -65,12 +66,12 @@ BEGIN=${PRODUCT_VERSION/-*/}
 PRODUCT_VERSION=${PRODUCT_VERSION::${#BEGIN}}
 PRODUCT_VERSION=${PRODUCT_VERSION}.0
 
-makensis //DPLATFORMVERSION="${PLATFORM}" \
+makensis //DMSYSRUNTIME="${MSYSRUNTIME}" \
+         //DPLATFORMVERSION="${PLATFORM}" \
          //DOMVERSION="${REVISION_SHORT}" \
          //DPRODUCTVERSION="${PRODUCT_VERSION}" \
          //DOPENMODELICASOURCEDIR="${OPENMODELICA_SOURCE_DIR}" \
          //DOPENMODELICAHOME="${OPENMODELICAHOME}" \
-         //DMSYSTEM="${MSYSTEM}" \
          OpenModelicaSetup.nsi
 ```
 
