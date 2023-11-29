@@ -9,7 +9,7 @@ OpenModelica Windows installer based on [NSIS](https://nsis.sourceforge.io/Main_
       `C:\Program Files (x86)\NSIS\Plugins\x86-unicode`.
   - [git](https://git-scm.com/)
   - [OMDev](https://gitlab.liu.se/OpenModelica/OMDevUCRT)
-  - [SignTool](https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool),
+  - (optional) [SignTool](https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool),
     part of
     [Microsoft Windows Software Development Kit](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/).
 
@@ -77,7 +77,7 @@ makensis //DPLATFORMVERSION="${PLATFORM}" \
 > [!NOTE]
 > `PRODUCT_VERSION` needs to be in `X.X.X.X` format.
 
-## Sign the installer
+## Optional: Sign the installer
 
 To sign the installer you'll need a code-signing certificate (SPC).
 See the [doc for more information](https://learn.microsoft.com/en-us/dotnet/framework/tools/signtool-exe).
