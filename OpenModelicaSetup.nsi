@@ -198,7 +198,7 @@ Section "OpenModelica Core" Section1
       "$%OMDEV%\tools\msys\*"
 !else #64 bit
 !if ${MSYSRUNTIME} == "ucrt"
-  File /r /x "mingw32" /x "mingw64" /x "clang64" /x "clang32" /x "group" /x "passwd" /x "pacman.log" /x "tmp\*.*" /x "*.pyc" /x "libQt5*.*" \
+  File /r /x "mingw32" /x "mingw64" /x "mingw*.*" /x "clang64" /x "clang32" /x "clang*.*" /x "group" /x "passwd" /x "pacman.log" /x "tmp" /x "home" /x "*.pyc" /x "libQt5*.*" \
       /x "moc.exe" /x "qt*.qch" /x "Qt5*.dll" /x "libwx*.*" /x "libgtk*.*" /x "qtcreator" /x "rcc.exe" \
       /x "testcon.exe" /x "libsicu*.*" /x "libicu*.*" /x "wx*.dll" /x "libosg*.*" /x "Adwaita" /x "OpenSceneGraph" /x "gtk-doc" \
       /x "poppler" /x "man" /x "libdbus.*" /x "tcl*.*" /x "avcodec*.*" /x "windeployqt.exe" /x "python3.5" /x "mingw_osg*.*" \
@@ -216,7 +216,7 @@ Section "OpenModelica Core" Section1
       /x "osgVolume" /x "osgWidget" /x "clang-cl.exe" /x "clang-check.exe" /x "llvm-lto2.exe" /x "doc" \
       "$%OMDEV%\tools\msys\*"
 !else # mingw64
-  File /r /x "mingw32" /x "ucrt64" /x "clang64" /x "clang32" /x "group" /x "passwd" /x "pacman.log" /x "tmp\*.*" /x "*.pyc" /x "libQt5*.*" \
+  File /r /x "mingw32" /x "mingw32.*" /x "ucrt64" /x "ucrt64.*" /x "clang64" /x "clang32" /x "clang*.*"  /x "group" /x "passwd" /x "pacman.log" /x "tmp" /x "home" /x "*.pyc" /x "libQt5*.*" \
       /x "moc.exe" /x "qt*.qch" /x "Qt5*.dll" /x "libwx*.*" /x "libgtk*.*" /x "qtcreator" /x "rcc.exe" \
       /x "testcon.exe" /x "libsicu*.*" /x "libicu*.*" /x "wx*.dll" /x "libosg*.*" /x "Adwaita" /x "OpenSceneGraph" /x "gtk-doc" \
       /x "poppler" /x "man" /x "libdbus.*" /x "tcl*.*" /x "avcodec*.*" /x "windeployqt.exe" /x "python3.5" /x "mingw_osg*.*" \
