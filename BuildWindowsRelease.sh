@@ -8,7 +8,7 @@
 #  TortoiseSVN command line tools
 #  jdk
 #  git command line clients (PUT IT LAST IN THE PATH!) http://git-scm.com/downloads
-#  OMDev in c:\OMDev
+#  OMDev in /c/OM122/OMDev
 #
 
 # get the ssh password via command line
@@ -57,7 +57,7 @@ export OPENMODELICAHOME="c:/OM122/${OM_ENCRYPT}OM${PLATFORM}/build"
 export OPENMODELICALIBRARY="c:/OM122/${OM_ENCRYPT}OM${PLATFORM}/build/lib/omlibrary"
 
 # have OMDEV in Msys version
-export OMDEV=/c/OMDev/
+export OMDEV=/c/OM122/OMDev/
 
 # update OMDev
 cd /c/OM122/OMDev/
