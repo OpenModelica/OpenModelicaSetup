@@ -93,6 +93,10 @@ if __name__ == "__main__":
   base_directory = OMDEV + "\\tools\msys\\" + args.MSYSRUNTIME + args.PLATFORMVERSION + "\share\qt5\plugins"
   files_to_exclude = [r".*\.git"]
   list_files(base_directory, [], files_to_exclude, f, True)
+  # Create bin\share directory and copy qt translations in it
+  f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\\share"' + '\n')
+  base_directory = "..\\build\\bin\\share"
+  list_files(base_directory, [], [], f, True)
   # Create the bin\osgPlugins-3.6.5 directory
   f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\osgPlugins-3.6.5"' + '\n')
   base_directory = OMDEV + "\\tools\msys\\" + args.MSYSRUNTIME + args.PLATFORMVERSION + "\\bin\osgPlugins-3.6.5"
