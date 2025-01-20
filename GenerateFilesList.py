@@ -76,7 +76,8 @@ if __name__ == "__main__":
   # Create bin directory and copy files in it
   f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin"' + '\n')
   base_directory = "..\\build\\bin"
-  list_files(base_directory, [], [], f, False)
+  files_to_exclude = [r".*\.git"]
+  list_files(base_directory, [], files_to_exclude, f, True)
   f.write('${File} "..\OSMC-License.txt" "OSMC-License.txt"' + '\n')
   # Copy the openssl binaries
   if args.PLATFORMVERSION == "32":
@@ -87,31 +88,6 @@ if __name__ == "__main__":
     f.write('${File} "bin\\64bit\libeay32.dll" "libeay32.dll"' + '\n')
     f.write('${File} "bin\\64bit\libssl-1_1-x64.dll" "libssl-1_1-x64.dll"' + '\n')
     f.write('${File} "bin\\64bit\ssleay32.dll" "ssleay32.dll"' + '\n')
-  # Copy the qt plugins
-  OMDEV = os.environ['OMDEV']
-  OMDEV = OMDEV.replace('/', '\\')
-  base_directory = OMDEV + "\\tools\msys\\" + args.MSYSRUNTIME + args.PLATFORMVERSION + "\share\qt5\plugins"
-  files_to_exclude = [r".*\.git"]
-  list_files(base_directory, [], files_to_exclude, f, True)
-  # Create bin\share directory and copy qt translations in it
-  f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\\share"' + '\n')
-  base_directory = "..\\build\\bin\\share"
-  list_files(base_directory, [], [], f, True)
-  # Create the bin\osgPlugins-3.6.5 directory
-  f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\osgPlugins-3.6.5"' + '\n')
-  base_directory = OMDEV + "\\tools\msys\\" + args.MSYSRUNTIME + args.PLATFORMVERSION + "\\bin\osgPlugins-3.6.5"
-  files_to_exclude = [r".*\.git"]
-  list_files(base_directory, [], files_to_exclude, f, True)
-  # Create bin\ffi directory and copy files in it
-  f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\\ffi"' + '\n')
-  base_directory = "..\\build\\bin\\ffi"
-  list_files(base_directory, [], [], f, False)
-  # Create bin\omc-semla directory and copy files in it
-  f.write('!if /FILEEXISTS "..\\build\\bin\omc-semla\*.*"' + '\n')
-  f.write('${SetOutPath} "\\\\?\\$INSTDIR\\bin\omc-semla"' + '\n')
-  base_directory = "..\\build\\bin\omc-semla"
-  list_files(base_directory, [], [], f, True)
-  f.write('!endif' + '\n')
   # Create icons directory and copy files in it
   f.write('${SetOutPath} "\\\\?\\$INSTDIR\icons"' + '\n')
   base_directory = "icons"
@@ -142,6 +118,8 @@ if __name__ == "__main__":
   # Create tools directory and copy files in it
   f.write('${SetOutPath} "\\\\?\\$INSTDIR\\tools"' + '\n')
   # copy the setup file / readme
+  OMDEV = os.environ['OMDEV']
+  OMDEV = OMDEV.replace('/', '\\')
   f.write('${File} "' + OMDEV + '\\tools\MSYS_SETUP.bat" "MSYS_SETUP.bat"' + '\n')
   f.write('${File} "' + OMDEV + '\\tools\MSYS_SETUP.txt" "MSYS_SETUP.txt"' + '\n')
   # Create msys directory and copy files in it
