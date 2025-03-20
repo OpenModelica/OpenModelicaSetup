@@ -110,11 +110,6 @@ if __name__ == "__main__":
   base_directory = "..\\build\lib\omc"
   files_to_exclude = [r".*\.git"]
   list_files(base_directory, [], files_to_exclude, f, True)
-  # Create lib\python directory and copy files in it
-  f.write('${SetOutPath} "\\\\?\\$INSTDIR\lib\python"' + '\n')
-  base_directory = "..\\build\lib\python"
-  files_to_exclude = [r".*\.git"]
-  list_files(base_directory, [], files_to_exclude, f, True)
   # Create tools directory and copy files in it
   f.write('${SetOutPath} "\\\\?\\$INSTDIR\\tools"' + '\n')
   # copy the setup file / readme

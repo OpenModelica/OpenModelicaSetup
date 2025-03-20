@@ -59,7 +59,7 @@ fi
 set +e
 # make sure we use the windows temp directory and not the msys/tmp one!
 
-# !!!!! make sure we don't do rm -f /* 
+# !!!!! make sure we don't do rm -f /*
 if [ ! -z "${TMP}" ]; then
  rm -rf ${TMP}/*
 fi
@@ -171,12 +171,6 @@ echo "Building CPP runtime"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
 echo "Copying OMSens"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} omsens
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
-echo "Installing Python scripting"
-rm -rf OMPython
-git clone https://github.com/OpenModelica/OMPython -q -b master /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMPython
-# build OMPython, don't fail for now until we can fix the UCRT build
-make -k -f 'Makefile.omdev.mingw' ${MAKETHREADS} install-python || true
 
 echo "OMJava scripting"
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
@@ -192,10 +186,6 @@ tar -xJf openmodelica-doc-latest.tar.xz --strip-components=2
 rm openmodelica-doc-latest.tar.xz
 wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/OpenModelicaUsersGuide-latest.pdf
 #cp OpenModelicaUsersGuide-latest.pdf OpenModelicaUsersGuide-latest.pdf
-
-# get PySimulator
-# for now get the master from github since OpenModelica plugin is still not part of tagged release. This should be updated once PySimulator outs a new release.
-git clone https://github.com/PySimulator/PySimulator -q -b master /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share/omc/scripts/PythonInterface/PySimulator
 
 # get Figaro - let's not do that for now as it has log4j inside
 #cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share

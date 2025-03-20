@@ -272,9 +272,6 @@ Section -post SEC0001
   "" "$INSTDIR\icons\PDF.ico" ""
   ${CreateShortcut} "$SMPROGRAMS\$StartMenuGroup\Documentation\OpenModelica - System Guide.pdf.lnk" "$INSTDIR\share\doc\omc\SystemDocumentation\OpenModelicaSystem.pdf" \
   "" "$INSTDIR\icons\PDF.ico" ""
-  ${CreateDirectory} "$SMPROGRAMS\$StartMenuGroup\PySimulator"
-  SetOutPath ""
-  ${CreateShortcut} "$SMPROGRAMS\$StartMenuGroup\PySimulator\README.lnk" "$INSTDIR\share\omc\scripts\PythonInterface\PySimulator\README.md" "" "" ""
   !insertmacro MUI_STARTMENU_WRITE_END
   ${registerExtension} "$INSTDIR\bin\OMEdit.exe" ".mo" "OpenModelica Connection Editor"
   ${registerExtension} "$INSTDIR\bin\OMNotebook.exe" ".onb" "OpenModelica Notebook"
