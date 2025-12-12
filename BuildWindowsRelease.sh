@@ -159,8 +159,6 @@ set -e
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary qtclients
 echo "Building CPP runtime"
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
-echo "Copying OMSens"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} omsens
 
 echo "OMJava scripting"
 cd /c/OM126/${OM_ENCRYPT}OM${PLATFORM}
