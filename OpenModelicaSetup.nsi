@@ -3,6 +3,8 @@
 
 Unicode true
 
+SetCompressor /FINAL LZMA
+
 !ifndef MSYSRUNTIME
   !error "Argument MSYSRUNTIME is not set. Call with argument /MSYSRUNTIME=mingw|ucrt"
 !endif
