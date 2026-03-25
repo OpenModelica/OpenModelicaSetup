@@ -137,7 +137,7 @@ if __name__ == "__main__":
   files_to_exclude = [r"group", r"passwd", r"pacman.log", r"libQt5.*\.*", r"libQt6.*\.*"
                       , r"moc.exe", r"qt.*\.qch", r"Qt5.*\.*", r"qt5.*\.*", r"Qt6.*\.*", r"qt6.*\.*", r"libwx.*\.*", r"libgtk.*\.*"
                       , r"rcc.exe", r"testcon.exe", r"libsicu.*\.*", r"libicu.*\.*", r"wx.*\.dll", r"libosg.*\.*", r"libdbus.*", r"tcl.*\.*", r"avcodec.*\.*"
-                      , r"windeployqt.exe", r"mingw_osg.*\.*", r"clang-cl.exe", r"clang-check.exe", r"llvm-lto2.exe", r".gitignore", r"utf8_adn_dbk.dll"]
+                      , r"windeployqt.exe", r"mingw_osg.*\.*", r"clang-cl.exe", r"clang-check.exe", r"llvm-lto2.exe", r".gitignore", r"utf8_and_gbk.dll"]
 
   if args.PLATFORMVERSION == "32":
     dirs_to_exclude = dirs_to_exclude + [r"mingw64", r"ucrt64", r"clang64"]
