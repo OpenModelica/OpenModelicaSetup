@@ -103,10 +103,10 @@ if [[ "$OPENMODELICA_BRANCH" =~ PR_.*_experimental ]]; then
   export PR_BUILD="PRbuilds/"
 else
   echo "Building $OPENMODELICA_BRANCH!"
-  git fetch && git fetch --tags
+  git fetch && git fetch --tags --force
   # attempt to reset to origin
   git checkout "$OPENMODELICA_BRANCH" && git reset --hard "origin/$OPENMODELICA_BRANCH" || true
-  git reset --hard "$OPENMODELICA_BRANCH" && git checkout "$OPENMODELICA_BRANCH" && git submodule update --force --init --recursive && git pull --recurse-submodules && git fetch && git fetch --tags || exit 1
+  git reset --hard "$OPENMODELICA_BRANCH" && git checkout "$OPENMODELICA_BRANCH" && git submodule update --force --init --recursive && git pull --recurse-submodules && git fetch && git fetch --tags --force || exit 1
 fi
 git checkout -f "$OPENMODELICA_BRANCH" || exit 1
 git reset --hard "$OPENMODELICA_BRANCH" || exit 1
@@ -141,7 +141,7 @@ else
 # clean
 rm -rf /c/dev/OpenModelica_releases/${OM_ENCRYPT}/v*
 rm -rf build
-git submodule foreach --recursive  "git fetch --tags && git reset --hard && git clean -fdxq -e /git -e /svn" || exit 1
+git submodule foreach --recursive  "git fetch --tags --force && git reset --hard && git clean -fdxq -e /git -e /svn" || exit 1
 git clean -fdxq -e OMSetup || exit 1
 git status
 git submodule status --recursive
