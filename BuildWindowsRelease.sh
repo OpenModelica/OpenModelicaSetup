@@ -97,8 +97,8 @@ git pull
 # update OpenModelica
 cd /c/OM126/${OM_ENCRYPT}OM${PLATFORM}
 git checkout master
-git fetch && git fetch --tags
-git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags || exit 1
+git fetch && git fetch --tags --force
+git reset --hard origin/master && git checkout master && git pull --recurse-submodules && git fetch --tags --force || exit 1
 git checkout --force "${OPENMODELICA_BRANCH}" || exit 1
 git submodule update --force --init --recursive || exit 1
 
@@ -131,7 +131,7 @@ else
 # clean
 rm -rf /c/OM126/OpenModelica_releases/${OM_ENCRYPT}/v*
 rm -rf build
-git submodule foreach --recursive  "git fetch --tags && git reset --hard && git clean -fdxq -e /git -e /svn" || exit 1
+git submodule foreach --recursive  "git fetch --tags --force && git reset --hard && git clean -fdxq -e /git -e /svn" || exit 1
 git clean -fdxq -e OMSetup || exit 1
 git status
 git submodule status --recursive
