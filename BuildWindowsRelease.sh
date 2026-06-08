@@ -158,7 +158,7 @@ echo "Building OpenModelica and OpenModelica libraries"
 set -e
 make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary qtclients
 echo "Building CPP runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release runtimeCPPinstall
+make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release all-runtimes
 
 echo "OMJava scripting"
 cd /c/OM127/${OM_ENCRYPT}OM${PLATFORM}
