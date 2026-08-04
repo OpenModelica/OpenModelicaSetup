@@ -195,7 +195,7 @@ Section -Main SEC0000
   FileWrite $4 $MultiUser.InstallMode
   FileClose $4
   # set the rights for all users
-  AccessControlW::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
+  AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
   # Remove any OPENMODELICALIBRARY environment variable
   DeleteRegValue ${ENV_HKCU} OPENMODELICALIBRARY
   DeleteRegValue ${ENV_HKLM} OPENMODELICALIBRARY
