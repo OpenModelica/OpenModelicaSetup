@@ -26,7 +26,7 @@ if [ "${OM_ENABLE_ENCRYPTION}" = "yes" ]; then
 fi
 
 # set the path to our tools
-export PATH=$PATH:/c/Program\ Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis3.04/:/c/bin/git/bin
+export PATH=$PATH:/c/Program\ Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:/c/bin/git/bin:/c/Program\ Files/Git/bin:/c/Program\ Files/Microsoft/jdk-21.0.1.12-hotspot/
 
 # is this a PR build?
 PR_BUILD=""
