@@ -41,7 +41,7 @@ Build:
   - OMSimulator
   - OMSens
 
-Download the the HTML and PDF versions of OpenModelica User's Guide:
+Download the HTML and PDF versions of OpenModelica User's Guide:
 
 ```bash
 cd ${OPENMODELICAHOME}/share/doc/omc
