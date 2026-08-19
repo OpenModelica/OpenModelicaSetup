@@ -53,6 +53,9 @@ SIGNTOOL=`find /c/Program\ Files\ \(x86\)/Windows\ Kits/10/ -wholename "*${XPREF
 if [ "${SIGNTOOL}" = "" ]; then
  echo "Could not find signtool.exe"
  exit 1
+else
+ echo "Testing if we can sign the executable with signtool.exe"
+ "${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //a //fd SHA256 //td SHA256 //v /c/dev/sign/OpenModelica.exe 
 fi
 
 # don't exit on error
