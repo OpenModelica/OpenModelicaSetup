@@ -157,18 +157,29 @@ git pull
 # build OpenModelica
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
 echo "Cleaning OpenModelica"
-rm -rf build/
-mkdir -p build/
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} gitclean || make -f 'Makefile.omdev.mingw' ${MAKETHREADS} gitclean || true
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} clean
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
+git clean -dfx
+git submodule foreach --recursive git clean -dfx
+rm -rf build_cmake/
 
 echo "Building OpenModelica and OpenModelica libraries"
 # make sure we break on error!
 set -e
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} ${OM_ENCRYPT_FLAGS} omc omc-diff omlibrary qtclients
-echo "Building CPP runtime"
-make -f 'Makefile.omdev.mingw' ${MAKETHREADS} BUILDTYPE=Release all-runtimes
+# CMAKE_INSTALL_PREFIX=build keeps the install layout identical to the old
+# Makefile.omdev.mingw build, so OPENMODELICAHOME/OPENMODELICALIBRARY above
+# and the installer packaging below don't need to change.
+CMAKE_ENCRYPTION_FLAG="-DOM_ENABLE_ENCRYPTION=OFF"
+if [ "${OM_ENABLE_ENCRYPTION}" = "yes" ]; then
+  CMAKE_ENCRYPTION_FLAG="-DOM_ENABLE_ENCRYPTION=ON"
+fi
+# MAKETHREADS is passed in as "-jN"; cmake --build wants just N
+CMAKE_BUILD_PARALLEL="${MAKETHREADS#-j}"
+cmake -S . -B build_cmake -G "MinGW Makefiles" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DOM_USE_CCACHE=OFF \
+      -DCMAKE_INSTALL_PREFIX=build \
+      ${CMAKE_ENCRYPTION_FLAG}
+cmake --build build_cmake --parallel ${CMAKE_BUILD_PARALLEL} --target install
+cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
 
 echo "OMJava scripting"
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
@@ -193,10 +204,6 @@ wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/
 #unzip jEdit4.5_VisualFigaro.zip
 #rm jEdit4.5_VisualFigaro.zip
 
-# OMSimulator
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/
-make -f Makefile.omdev.mingw omsimulator
-
 # build the installer
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
@@ -209,8 +216,8 @@ if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3
   exit 1
 fi
 
-# sign the installer but do not fail!
-"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //a //fd SHA256 //td SHA256 //v OpenModelica.exe
+# sign the installer but do not fail! (set -e is active, so guard explicitly)
+"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //a //fd SHA256 //td SHA256 //v OpenModelica.exe || echo "WARNING: signing OpenModelica.exe failed, continuing unsigned"
 
 # move the installer
 mv OpenModelica.exe ${OMC_INSTALL_FILE_PREFIX}.exe
