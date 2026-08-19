@@ -5,8 +5,8 @@ OpenModelica Windows installer based on [NSIS](https://nsis.sourceforge.io/Main_
 ## Dependencies
 
   - [NSIS 3.0.4](https://nsis.sourceforge.io/Main_Page)
-    - Copy `AccessControlW.dll` into your NSIS plugin directory, e.g. into
-      `C:\Program Files (x86)\NSIS\Plugins\x86-unicode`.
+    - Copy `AccessControl.dll` (checked into this repo) into your NSIS Unicode
+      plugin directory, e.g. into `C:\Program Files (x86)\NSIS\Plugins\x86-unicode`.
   - [git](https://git-scm.com/)
   - [OMDev](https://gitlab.liu.se/OpenModelica/OMDevUCRT)
   - (optional) [SignTool](https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool),
@@ -84,6 +84,19 @@ makensis //DMSYSRUNTIME="${MSYSRUNTIME}" \
 
 > [!NOTE]
 > `PRODUCT_VERSION` needs to be in `X.X.X.X` format.
+
+> [!WARNING]
+> `OpenModelicaSetup.nsi` compresses with `SetCompressor /FINAL LZMA`, NSIS's
+> slowest but best-ratio compressor. It single-threads through the entire MSYS2
+> toolchain plus your OpenModelica install (tens of thousands of files, several
+> GB), so a full `makensis` run can easily take **over an hour**, and a script
+> error anywhere at or after `Section -Main` (e.g. a missing plugin) only
+> surfaces once that whole pass finishes.
+>
+> While iterating on the `.nsi` script itself, temporarily switch line 6 to
+> `SetCompressor /FINAL zlib` (much faster, bigger output) to get a full
+> compile — including plugin resolution and syntax errors — in well under a
+> minute. Switch it back to `LZMA` before producing a real release build.
 
 ## Optional: Sign the installer
 
