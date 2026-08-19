@@ -65,12 +65,20 @@ BEGIN=${PRODUCT_VERSION/-*/}
 PRODUCT_VERSION=${PRODUCT_VERSION::${#BEGIN}}
 PRODUCT_VERSION=${PRODUCT_VERSION}.0
 
-makensis //DPLATFORMVERSION="${PLATFORM}" \
+# derive MSYSRUNTIME from MSYSTEM (set by the MSYS2 shell you're running in)
+MSYSRUNTIME="mingw"
+if [ "${MSYSTEM}" = "UCRT64" ]; then
+  MSYSRUNTIME="ucrt"
+fi
+
+# generate the list of files for the installer from your CMake install directory
+python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" --PLATFORMVERSION="${PLATFORM}" \
+       --OPENMODELICAHOME="${OPENMODELICAHOME}" --OPENMODELICASOURCEDIR="${OPENMODELICA_SOURCE_DIR}"
+
+makensis //DMSYSRUNTIME="${MSYSRUNTIME}" \
+         //DPLATFORMVERSION="${PLATFORM}" \
          //DOMVERSION="${REVISION_SHORT}" \
          //DPRODUCTVERSION="${PRODUCT_VERSION}" \
-         //DOPENMODELICASOURCEDIR="${OPENMODELICA_SOURCE_DIR}" \
-         //DOPENMODELICAHOME="${OPENMODELICAHOME}" \
-         //DMSYSTEM="${MSYSTEM}" \
          OpenModelicaSetup.nsi
 ```
 
