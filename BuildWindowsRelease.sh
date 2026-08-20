@@ -184,13 +184,6 @@ cmake -S . -B build_cmake -G "MinGW Makefiles" \
 cmake --build build_cmake --parallel ${CMAKE_BUILD_PARALLEL} --target install
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
 
-echo "OMJava scripting"
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
-rm -rf OMJava
-git clone https://github.com/OpenModelica/OMJava.git
-cd OMJava && make dep && make install
-cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}
-
 # wget the html & pdf versions of OpenModelica users guide
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/build/share/doc/omc
 wget --no-check-certificate https://openmodelica.org/doc/openmodelica-doc-latest.tar.xz
