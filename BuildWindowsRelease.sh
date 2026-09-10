@@ -200,7 +200,7 @@ if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3
 fi
 
 # sign the installer but do not fail!
-"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //a //td SHA256 //v OpenModelica.exe
+"${SIGNTOOL}" sign //n "Open Source Modelica Consortium" //tr "http://timestamp.globalsign.com/tsa/r6advanced1" //a //fd SHA256 //td SHA256 //v OpenModelica.exe
 
 # move the installer
 mv OpenModelica.exe ${OMC_INSTALL_FILE_PREFIX}.exe
