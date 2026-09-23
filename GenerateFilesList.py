@@ -139,10 +139,23 @@ if __name__ == "__main__":
   base_directory = args.OPENMODELICAHOME + r"\include\omc"
   files_to_exclude = [r".*\.git.*"]
   list_files(base_directory, [], files_to_exclude, f, True)
-  # Create lib\<arch>\omc directory and copy files in it
+  # Create lib\omc directory and copy files in it.
+  # The CMake install still puts the architecture-independent files omc loads at
+  # runtime (NFModelicaBuiltin.mo, ModelicaBuiltin.mo, ...) into the flat lib\omc;
+  # only the static libraries moved to lib\<arch>\omc, so both must be packaged.
   lib_directory = args.OPENMODELICAHOME + r"\lib"
-  arch_name, omc_lib_directory = find_lib_omc_dir(lib_directory)
+  omc_data_directory = os.path.join(lib_directory, "omc")
+  if not os.path.isfile(os.path.join(omc_data_directory, "NFModelicaBuiltin.mo")):
+    raise RuntimeError(
+      'Expected "%s" to contain NFModelicaBuiltin.mo; omc cannot start without it. '
+      'Update GenerateFilesList.py if the CMake install layout changed.' % omc_data_directory
+    )
   f.write(r'${AddItem} "\\?\$INSTDIR\lib"' + '\n')
+  f.write(r'${SetOutPath} "\\?\$INSTDIR\lib\omc"' + '\n')
+  files_to_exclude = [r".*\.git.*"]
+  list_files(omc_data_directory, [], files_to_exclude, f, True)
+  # Create lib\<arch>\omc directory and copy files in it
+  arch_name, omc_lib_directory = find_lib_omc_dir(lib_directory)
   f.write(r'${AddItem} "\\?\$INSTDIR\lib\%s"' % arch_name + '\n')
   f.write(r'${SetOutPath} "\\?\$INSTDIR\lib\%s\omc"' % arch_name + '\n')
   files_to_exclude = [r".*\.git.*"]
