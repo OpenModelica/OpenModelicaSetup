@@ -74,8 +74,11 @@ def list_files(base_dir, exclude_dirs, exclude_files, f, recursive):
   exclude_files_regex = [re.compile(pattern) for pattern in exclude_files]
 
   for root, dirs, files in os.walk(base_dir):
-    # Exclude specified directories
-    dirs[:] = [d for d in dirs if not any(regex.match(d) for regex in exclude_dirs_regex)]
+    # Exclude specified directories, but not inside site-packages: the name
+    # patterns would also drop Python subpackages (e.g. pyqtgraph.Qt.QtCore).
+    # A package with a missing subpackage fails to import, so ship those whole.
+    if 'site-packages' not in os.path.relpath(root, base_dir).split(os.sep):
+      dirs[:] = [d for d in dirs if not any(regex.match(d) for regex in exclude_dirs_regex)]
     reset_output_path = False
     if root != base_dir:
       # relpath so that a directory named like base_dir deeper in the tree is
