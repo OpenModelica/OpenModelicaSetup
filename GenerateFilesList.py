@@ -68,16 +68,17 @@ def find_lib_omc_dir(lib_directory):
     )
   return candidates[0]
 
-def list_files(base_dir, exclude_dirs, exclude_files, f, recursive):
-  # Compile regular expressions for exclusions
+def list_files(base_dir, exclude_dirs, exclude_files, f, recursive, keep_dirs=()):
+  # Compile regular expressions for exclusions. exclude_dirs match a directory
+  # name at any depth; keep_dirs match a path relative to base_dir, and no
+  # directory excludes are applied below a directory they match.
   exclude_dirs_regex = [re.compile(pattern) for pattern in exclude_dirs]
   exclude_files_regex = [re.compile(pattern) for pattern in exclude_files]
+  keep_dirs_regex = [re.compile(pattern) for pattern in keep_dirs]
 
   for root, dirs, files in os.walk(base_dir):
-    # Exclude specified directories, but not inside site-packages: the name
-    # patterns would also drop Python subpackages (e.g. pyqtgraph.Qt.QtCore).
-    # A package with a missing subpackage fails to import, so ship those whole.
-    if 'site-packages' not in os.path.relpath(root, base_dir).split(os.sep):
+    # Exclude specified directories
+    if not any(regex.match(os.path.relpath(root, base_dir)) for regex in keep_dirs_regex):
       dirs[:] = [d for d in dirs if not any(regex.match(d) for regex in exclude_dirs_regex)]
     reset_output_path = False
     if root != base_dir:
@@ -192,6 +193,10 @@ if __name__ == "__main__":
                       , r"rcc.exe", r"testcon.exe", r"libsicu.*\.*", r"libicu.*\.*", r"wx.*\.dll", r"libosg.*\.*", r"libdbus.*", r"tcl.*\.*", r"avcodec.*\.*"
                       , r"windeployqt.exe", r"mingw_osg.*\.*", r"clang-cl.exe", r"clang-check.exe", r"llvm-lto2.exe", r"\.gitignore", r"utf8_and_gbk.dll"]
 
+  # Ship the bundled Python whole: the directory name patterns above would also
+  # drop Python subpackages (e.g. pyqtgraph.Qt.QtCore), which then fail to import.
+  dirs_to_keep = [r"(ucrt64|mingw64|mingw32)[\\/]lib[\\/]python3\.\d+([\\/]|$)"]
+
   if args.PLATFORMVERSION == "32":
     dirs_to_exclude = dirs_to_exclude + [r"mingw64", r"ucrt64", r"clang64"]
   else: # 64 bit
@@ -199,7 +204,7 @@ if __name__ == "__main__":
       dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"mingw64", r"clang64", r"clang32"]
     else: # mingw64
       dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"ucrt64", r"clang64", r"clang32"]
-  list_files(base_directory, dirs_to_exclude, files_to_exclude, f, True)
+  list_files(base_directory, dirs_to_exclude, files_to_exclude, f, True, dirs_to_keep)
   # Create tmp folder for msys
   f.write(r'${SetOutPath} "\\?\$INSTDIR\tools\msys\tmp"' + '\n')
   # Create share directory and copy files in it
