@@ -175,6 +175,14 @@ BEGIN=${PRODUCT_VERSION/-*/}
 PRODUCT_VERSION=${PRODUCT_VERSION::${#BEGIN}}
 # make a valid VIProductVersion
 PRODUCT_VERSION=${PRODUCT_VERSION}.0
+# The installer is named after the full revision, so each nightly build has its own registry keys
+# and its own default directory and can be installed next to the other versions.
+REVISION_FULL="${REVISION:1}"
+# anything that is not built from a release tag is a nightly build for the installer
+NSIS_NIGHTLY=""
+if [ "${REVISION_FULL}" != "${REVISION_SHORT}" ]; then
+  NSIS_NIGHTLY="//DOMNIGHTLY=1"
+fi
 
 # Directory prefix
 export OMC_INSTALL_PREFIX="/c/dev/OpenModelica_releases/${OM_ENCRYPT}${REVISION}/"
@@ -256,7 +264,7 @@ rm -rf 	OMLibraries.nsh
 python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" --PLATFORMVERSION="${PLATFORM::-3}"
 # make sure we have it in Windows version for the NSIS
 export OMDEV=${OMDEVWIN}
-if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_SHORT}" //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
+if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_FULL}" ${NSIS_NIGHTLY} //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
   cat trace.txt
   exit 1
 fi
