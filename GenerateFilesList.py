@@ -106,7 +106,6 @@ def list_files(base_dir, exclude_dirs, exclude_files, f, recursive, keep_dirs=()
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='Generates a list of files to copy for NSIS installer.')
   parser.add_argument('--MSYSRUNTIME', type=str, default="ucrt", help='Specify MSYSRUNTIME either mingw or ucrt.')
-  parser.add_argument('--PLATFORMVERSION', type=str, default="64", help='Specify PLATFORMVERSION either 32 or 64.')
   parser.add_argument('--OPENMODELICAHOME', type=str, default=r"..\build", help='Path to the OpenModelica build/install directory (e.g. a CMake install prefix).')
   parser.add_argument('--OPENMODELICASOURCEDIR', type=str, default="..", help='Path to the OpenModelica source directory.')
   args = parser.parse_args()
@@ -119,14 +118,9 @@ if __name__ == "__main__":
   list_files(base_directory, [], files_to_exclude, f, True)
   f.write('${File} "' + args.OPENMODELICASOURCEDIR + r'\OSMC-License.txt" "OSMC-License.txt"' + '\n')
   # Copy the openssl binaries
-  if args.PLATFORMVERSION == "32":
-    f.write(r'${File} "bin\32bit\libeay32.dll" "libeay32.dll"' + '\n')
-    f.write(r'${File} "bin\32bit\libssl32.dll" "libssl32.dll"' + '\n')
-    f.write(r'${File} "bin\32bit\ssleay32.dll" "ssleay32.dll"' + '\n')
-  else:
-    f.write(r'${File} "bin\64bit\libeay32.dll" "libeay32.dll"' + '\n')
-    f.write(r'${File} "bin\64bit\libssl-1_1-x64.dll" "libssl-1_1-x64.dll"' + '\n')
-    f.write(r'${File} "bin\64bit\ssleay32.dll" "ssleay32.dll"' + '\n')
+  f.write(r'${File} "bin\64bit\libeay32.dll" "libeay32.dll"' + '\n')
+  f.write(r'${File} "bin\64bit\libssl-1_1-x64.dll" "libssl-1_1-x64.dll"' + '\n')
+  f.write(r'${File} "bin\64bit\ssleay32.dll" "ssleay32.dll"' + '\n')
   # Create icons directory and copy files in it
   f.write(r'${SetOutPath} "\\?\$INSTDIR\icons"' + '\n')
   base_directory = "icons"
@@ -197,13 +191,10 @@ if __name__ == "__main__":
   # drop Python subpackages (e.g. pyqtgraph.Qt.QtCore), which then fail to import.
   dirs_to_keep = [r"(ucrt64|mingw64|mingw32)[\\/]lib[\\/]python3\.\d+([\\/]|$)"]
 
-  if args.PLATFORMVERSION == "32":
-    dirs_to_exclude = dirs_to_exclude + [r"mingw64", r"ucrt64", r"clang64"]
-  else: # 64 bit
-    if args.MSYSRUNTIME == "ucrt":
-      dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"mingw64", r"clang64", r"clang32"]
-    else: # mingw64
-      dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"ucrt64", r"clang64", r"clang32"]
+  if args.MSYSRUNTIME == "ucrt":
+    dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"mingw64", r"clang64", r"clang32"]
+  else: # mingw64
+    dirs_to_exclude = dirs_to_exclude + [r"mingw32", r"ucrt64", r"clang64", r"clang32"]
   list_files(base_directory, dirs_to_exclude, files_to_exclude, f, True, dirs_to_keep)
   # Create tmp folder for msys
   f.write(r'${SetOutPath} "\\?\$INSTDIR\tools\msys\tmp"' + '\n')

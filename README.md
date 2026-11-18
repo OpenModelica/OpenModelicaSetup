@@ -56,8 +56,8 @@ wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/
 Start `%OMDEV%\tools\msys\ucrt64.exe` or `%OMDEV%\tools\msys\mingw64.exe` and run:
 
 ```bash
-export PLATFORM="64"        # 64 or 32 bit
 export OPENMODELICA_SOURCE_DIR="d:\\path\\to\\OpenModelica"
+export REVISION=`cd $OPENMODELICA_SOURCE_DIR; git describe --match "v*.*" --always`
 export REVISION_SHORT=`cd $OPENMODELICA_SOURCE_DIR; git describe --match "v*.*" --always --abbrev=0`
 export PRODUCT_VERSION="${REVISION_SHORT:1}"
 # make a valid VIProductVersion by stripping everything after "-"
@@ -72,18 +72,52 @@ if [ "${MSYSTEM}" = "UCRT64" ]; then
 fi
 
 # generate the list of files for the installer from your CMake install directory
-python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" --PLATFORMVERSION="${PLATFORM}" \
+python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" \
        --OPENMODELICAHOME="${OPENMODELICAHOME}" --OPENMODELICASOURCEDIR="${OPENMODELICA_SOURCE_DIR}"
 
 makensis //DMSYSRUNTIME="${MSYSRUNTIME}" \
-         //DPLATFORMVERSION="${PLATFORM}" \
-         //DOMVERSION="${REVISION_SHORT}" \
+         //DOMVERSION="${REVISION:1}" \
          //DPRODUCTVERSION="${PRODUCT_VERSION}" \
          OpenModelicaSetup.nsi
 ```
 
 > [!NOTE]
 > `PRODUCT_VERSION` needs to be in `X.X.X.X` format.
+
+> [!NOTE]
+> `OMVERSION` is the full revision without the leading `v`, e.g. `1.27.0` for a release and
+> `1.28.0-dev-1962-g6e348e217c` for a nightly build. Add `//DOMNIGHTLY=1` for anything that is
+> not built from a release tag.
+
+## Multiple installations
+
+Different versions can be installed side by side
+([OpenModelica#5809](https://github.com/OpenModelica/OpenModelica/issues/5809)). The version is
+part of everything the installer registers:
+
+  - registry keys `SOFTWARE\OpenModelica <version>` (`Path`, `InstallMode`, `Version`, `Nightly`)
+    and `SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OpenModelica <version>`,
+  - environment variable `OPENMODELICAHOME_<version>`, with the version sanitized to letters,
+    digits and underscores, e.g. `OPENMODELICAHOME_1_27_0`,
+  - default installation directory and start menu folder.
+
+The installer handles what is already installed as follows:
+
+  - the same version is uninstalled first (or the setup quits),
+  - a release from before the side by side installations: offers to uninstall it,
+  - another nightly build, when a nightly build is installed: offers to uninstall it,
+  - any other version is kept.
+
+The component *Default installation* (selected by default) makes the installed version the one
+that `OPENMODELICAHOME` points to and that opens the `.mo` and `.onb` files. When the default
+installation is uninstalled, the highest remaining version takes over.
+
+Command line options, in addition to the NSIS ones (`/S`, `/D=<directory>`):
+
+  - `/DEFAULT=0` do not make this installation the default one,
+  - `/REMOVENIGHTLIES` with `/S`: uninstall the other nightly builds when a nightly build is
+    installed. A silent install always uninstalls the same version and a release from before the
+    side by side installations, as it did before.
 
 > [!WARNING]
 > `OpenModelicaSetup.nsi` compresses with `SetCompressor /FINAL LZMA`, NSIS's
