@@ -261,10 +261,10 @@ wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/
 cd /c/dev/${OM_ENCRYPT}OM${PLATFORM}/OMSetup
 rm -rf 	OMLibraries.nsh
 # generate the list of files for the installer
-python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" --PLATFORMVERSION="${PLATFORM::-3}"
+python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}"
 # make sure we have it in Windows version for the NSIS
 export OMDEV=${OMDEVWIN}
-if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DPLATFORMVERSION="${PLATFORM::-3}" //DOMVERSION="${REVISION_FULL}" ${NSIS_NIGHTLY} //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
+if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DOMVERSION="${REVISION_FULL}" ${NSIS_NIGHTLY} //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
   cat trace.txt
   exit 1
 fi

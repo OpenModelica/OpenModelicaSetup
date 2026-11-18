@@ -56,7 +56,6 @@ wget --no-check-certificate https://openmodelica.org/doc/OpenModelicaUsersGuide/
 Start `%OMDEV%\tools\msys\ucrt64.exe` or `%OMDEV%\tools\msys\mingw64.exe` and run:
 
 ```bash
-export PLATFORM="64"        # 64 or 32 bit
 export OPENMODELICA_SOURCE_DIR="d:\\path\\to\\OpenModelica"
 export REVISION=`cd $OPENMODELICA_SOURCE_DIR; git describe --match "v*.*" --always`
 export REVISION_SHORT=`cd $OPENMODELICA_SOURCE_DIR; git describe --match "v*.*" --always --abbrev=0`
@@ -73,11 +72,10 @@ if [ "${MSYSTEM}" = "UCRT64" ]; then
 fi
 
 # generate the list of files for the installer from your CMake install directory
-python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" --PLATFORMVERSION="${PLATFORM}" \
+python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}" \
        --OPENMODELICAHOME="${OPENMODELICAHOME}" --OPENMODELICASOURCEDIR="${OPENMODELICA_SOURCE_DIR}"
 
 makensis //DMSYSRUNTIME="${MSYSRUNTIME}" \
-         //DPLATFORMVERSION="${PLATFORM}" \
          //DOMVERSION="${REVISION:1}" \
          //DPRODUCTVERSION="${PRODUCT_VERSION}" \
          OpenModelicaSetup.nsi

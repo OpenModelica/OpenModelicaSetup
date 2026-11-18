@@ -9,10 +9,6 @@ SetCompressor /FINAL LZMA
   !error "Argument MSYSRUNTIME is not set. Call with argument /MSYSRUNTIME=mingw|ucrt"
 !endif
 
-!ifndef PLATFORMVERSION
-  !error "Argument PLATFORMVERSION is not set. Call with argument /DPLATFORMVERSION=32 or /DPLATFORMVERSION=64"
-!endif
-
 !ifndef OMVERSION
   !error "Argument OMVERSION is not set. Call with argument /DOMVERSION=OpenModelica version tag"
 !endif
@@ -21,10 +17,11 @@ SetCompressor /FINAL LZMA
   !error "Argument PRODUCTVERSION is not set. Call with argument /DPRODUCTVERSION=OpenModelica version"
 !endif
 
-Name OpenModelica${OMVERSION}-${PLATFORMVERSION}bit
+# Only 64-bit releases are made. The name keeps the 64bit suffix of the earlier releases.
+Name OpenModelica${OMVERSION}-64bit
 
 # General Symbol Definitions
-!define VERSION ${OMVERSION}-${PLATFORMVERSION}bit
+!define VERSION ${OMVERSION}-64bit
 # Several versions can be installed side by side, so the version is part of the registry keys.
 # The key is a sibling of SOFTWARE\OpenModelica and not a subkey of it: the uninstallers of the
 # older releases delete the entire SOFTWARE\OpenModelica key.
@@ -93,7 +90,6 @@ BrandingText "Copyright $2 OpenModelica"  ; The $2 variable is filled in the Fun
 !include MUI2.nsh
 !include LogicLib.nsh
 !include FileFunc.nsh
-!include x64.nsh
 # Include for some of the windows messages defines
 !include "winmessages.nsh"
 !include "FileAssociation.nsh"
@@ -260,14 +256,9 @@ Section -post SEC0001
   Exec '"$INSTDIR\tools\msys\usr\bin\mkgroup.exe" -l -c > "$INSTDIR\tools\msys\etc\group"'
   # Rename libeay32.dll and ssleay32.dll as they seem to have issues on some newer Windows versions
   # https://trac.openmodelica.org/OpenModelica/ticket/5909 https://www.openmodelica.org/forum/default-topic/2944-installation-problems
-!if ${PLATFORMVERSION} == "32"
-  ${Rename} "$INSTDIR\tools\msys\mingw32\bin\libeay32.dll" "$INSTDIR\tools\msys\mingw32\bin\libeay32-O.dll"
-  ${Rename} "$INSTDIR\tools\msys\mingw32\bin\ssleay32.dll" "$INSTDIR\tools\msys\mingw32\bin\ssleay32-O.dll"
-!else # mingw64 or ucrt64
 !if ${MSYSRUNTIME} == "mingw"
   ${Rename} "$INSTDIR\tools\msys\mingw64\bin\libeay32.dll" "$INSTDIR\tools\msys\mingw64\bin\libeay32-O.dll"
   ${Rename} "$INSTDIR\tools\msys\mingw64\bin\ssleay32.dll" "$INSTDIR\tools\msys\mingw64\bin\ssleay32-O.dll"
-!endif
 !endif
   # do post installation actions
   ${WriteRegStr} SHCTX "${REGKEY}" Path $INSTDIR
@@ -554,12 +545,8 @@ Function .onInit
   Pop $0  ; Day
   Pop $1  ; Month
   Pop $2  ; Year
-!if ${PLATFORMVERSION} == "64"
-  ${If} ${RunningX64}
-    ; disable registry redirection (enable access to 64-bit portion of registry)
-    SetRegView 64
-  ${EndIf}
-!endif
+  ; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   ; command line options, mostly for the silent install:
   ;   /DEFAULT=0        do not make this installation the default one
   ;   /REMOVENIGHTLIES  remove the other nightly builds when a nightly build is installed with /S
@@ -579,14 +566,10 @@ Function .onInit
   ; Check what is already installed, for the current user and for all users
   !insertmacro HandleInstalledVersions HKCU
   !insertmacro HandleInstalledVersions HKLM
-!if ${PLATFORMVERSION} == "64"
-  ${If} ${RunningX64}
-    ; the older releases installed with /D registered in the 32-bit portion of the registry
-    SetRegView 32
-    !insertmacro HandleInstalledVersions HKLM
-    SetRegView 64
-  ${EndIf}
-!endif
+  ; the older releases installed with /D registered in the 32-bit portion of the registry
+  SetRegView 32
+  !insertmacro HandleInstalledVersions HKLM
+  SetRegView 64
   InitPluginsDir
   !insertmacro MULTIUSER_INIT
   ; check for /D flag
@@ -594,13 +577,7 @@ Function .onInit
     ; /D was used so we don't set the installation path
   ${Else}
     ;set initial value for $INSTDIR
-    StrCpy $INSTDIR "$PROGRAMFILES\$(^Name)"
-!if ${PLATFORMVERSION} == "64"
-    ${If} ${RunningX64}
-      ; change install dir
-      StrCpy $INSTDIR "$PROGRAMFILES64\$(^Name)"
-    ${EndIf}
-!endif
+    StrCpy $INSTDIR "$PROGRAMFILES64\$(^Name)"
   ${EndIf}
   ; check for /S flag
   IfSilent +1 +4 ; in silent install mode set multiuser to AllUsers.
@@ -628,11 +605,7 @@ Function un.onInit
   Pop $0  ; Day
   Pop $1  ; Month
   Pop $2  ; Year
-!if ${PLATFORMVERSION} == "64"
-  ${If} ${RunningX64}
-    ; the installer writes to the 64-bit portion of the registry
-    SetRegView 64
-  ${EndIf}
-!endif
+  ; the installer writes to the 64-bit portion of the registry
+  SetRegView 64
   !insertmacro MULTIUSER_UNINIT
 FunctionEnd
