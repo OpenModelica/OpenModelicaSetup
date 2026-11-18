@@ -327,7 +327,7 @@ Section -environment
 SectionEnd
 
 LangString DESC_Section1 ${LANG_ENGLISH} "OpenModelica ${VERSION}."
-LangString DESC_SectionDefault ${LANG_ENGLISH} "Use this version as the default OpenModelica: set the OPENMODELICAHOME environment variable that OMPython, OMJulia, OMMatlab and other clients use to find OpenModelica and open the .mo and .onb files with this version."
+LangString DESC_SectionDefault ${LANG_ENGLISH} "Make this the default OpenModelica: set OPENMODELICAHOME to it and open the .mo and .onb files with it."
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Section1} $(DESC_Section1)
   !insertmacro MUI_DESCRIPTION_TEXT ${SectionDefault} $(DESC_SectionDefault)
@@ -359,6 +359,13 @@ Section "Uninstall"
   ReadRegStr $R3 HKCR "OpenModelica Connection Editor\shell\open\command" ""
   ${If} $R3 == '"$INSTDIR\bin\OMEdit.exe" "%1"'
     StrCpy $un.HadFileAssoc 1
+  ${ElseIf} $R3 == ""
+    ; An installer that ran without administrator rights could not write the command: the .mo
+    ; extension then points to an association that opens nothing and is restored as well.
+    ReadRegStr $R3 HKCR ".mo" ""
+    ${If} $R3 == "OpenModelica Connection Editor"
+      StrCpy $un.HadFileAssoc 1
+    ${EndIf}
   ${EndIf}
   ;Can't uninstall if uninstall log is missing!
   IfFileExists "$INSTDIR\${UninstLog}" +3
