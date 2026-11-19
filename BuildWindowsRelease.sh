@@ -264,7 +264,8 @@ rm -rf 	OMLibraries.nsh
 python GenerateFilesList.py --MSYSRUNTIME="${MSYSRUNTIME}"
 # make sure we have it in Windows version for the NSIS
 export OMDEV=${OMDEVWIN}
-if ! makensis //DMSYSRUNTIME="${MSYSRUNTIME}" //DOMVERSION="${REVISION_FULL}" ${NSIS_NIGHTLY} //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
+# OpenModelicaSetup.nsi is UTF-8 without a BOM; on Windows makensis reads such a file in the ANSI code page
+if ! makensis //INPUTCHARSET UTF8 //DMSYSRUNTIME="${MSYSRUNTIME}" //DOMVERSION="${REVISION_FULL}" ${NSIS_NIGHTLY} //DPRODUCTVERSION=${PRODUCT_VERSION} OpenModelicaSetup.nsi > trace.txt 2>&1 ; then
   cat trace.txt
   exit 1
 fi
